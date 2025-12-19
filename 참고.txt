@@ -1,0 +1,11 @@
+NextAuth 쓰는 이유: 
+
+OAuth 토큰 교환 자동 처리
+
+CSRF / State 공격 방어
+
+세션 / JWT 관리
+
+Provider 설정 몇 줄이면 끝
+
+Next.js App Router 완벽 호환

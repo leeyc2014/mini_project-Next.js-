@@ -14,16 +14,15 @@ export default function Home() {
 
   const [rememberId, setRememberId] = useState(false);
 
-  const emailRef = useRef<HTMLInputElement>(null);
+  const idRef = useRef<HTMLInputElement>(null);
+  const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
   useEffect(() => {
-    const savedEmail = localStorage.getItem("savedEmail");
+    const savedid = localStorage.getItem("savedid");
 
-    if (savedEmail && emailRef.current) {
-      emailRef.current.value = savedEmail;
+    if (savedid && idRef.current) {
+      idRef.current.value = savedid;
       setRememberId(true);
     }
   }, []);
@@ -32,20 +31,21 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
 
-    const email = emailRef.current?.value;
+    const id = idRef.current?.value;
+    const username = usernameRef.current?.value;
     const password = passwordRef.current?.value;
 
-    if (!email || !password) {
-      alert("이메일과 비밀번호를 입력해주세요.");
+    if (!id || !password) {
+      alert("아이디과 비밀번호를 입력해주세요.");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch(`${baseUrl}`, {
+      const res = await fetch("/api/member", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ id, username, password }),
       }
       );
 
@@ -58,10 +58,10 @@ export default function Home() {
       setUser(userData);
 
       if (rememberId) {
-        localStorage.setItem("savedEmail", email);
+        localStorage.setItem("savedid", id);
       }
       else {
-        localStorage.removeItem("savedEmail");
+        localStorage.removeItem("savedid");
       }
 
       router.push("/dashboard");
@@ -88,8 +88,8 @@ export default function Home() {
             <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl">로그인</h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">이메일 주소</label>
-                <input type="email" name="email" id="email" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="이메일 입력" ref={emailRef} />
+                <label htmlFor="id" className="block mb-2 text-sm font-medium text-gray-900">아이디</label>
+                <input type="id" name="id" id="id" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="아이디 입력" ref={idRef} />
               </div>
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">비밀번호</label>

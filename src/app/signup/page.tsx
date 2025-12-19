@@ -4,7 +4,7 @@ import { useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SignUp() {
-    const emailRef = useRef<HTMLInputElement>(null);
+    const idRef = useRef<HTMLInputElement>(null);
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const checkPasswordRef = useRef<HTMLInputElement>(null);
@@ -12,18 +12,16 @@ export default function SignUp() {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
     const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
 
-        const email = emailRef.current?.value;
+        const id = idRef.current?.value;
         const username = usernameRef.current?.value;
         const password = passwordRef.current?.value;
         const checkPassword = checkPasswordRef.current?.value;
 
-        if (!email || !username || !password || !checkPassword) {
+        if (!id || !username || !password || !checkPassword) {
             alert('모든 항목을 입력해주세요.');
             setLoading(false);
             return;
@@ -36,10 +34,10 @@ export default function SignUp() {
         }
 
         try {
-            const res = await fetch(`${baseUrl}`, {
+            const res = await fetch("/api/members", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ id, password }),
             });
             if (!res.ok) {
                 alert("회원가입 실패");
@@ -63,8 +61,8 @@ export default function SignUp() {
                 <h1 className="text-2xl font-bold mb-6 text-center">회원가입</h1>
                 <form className="space-y-4" onSubmit={handleSignUp}>
                     <div>
-                        <label htmlFor="email" className="block mb-2 text-sm font-medium">이메일</label>
-                        <input type="email" id="email" ref={emailRef} className="w-full p-2 border rounded" placeholder="이메일 입력" />
+                        <label htmlFor="id" className="block mb-2 text-sm font-medium">아이디</label>
+                        <input type="id" id="id" ref={idRef} className="w-full p-2 border rounded" placeholder="아이디 입력" />
                     </div>
                     <div>
                         <label htmlFor="username" className="block mb-2 text-sm font-medium">사용자 이름</label>
