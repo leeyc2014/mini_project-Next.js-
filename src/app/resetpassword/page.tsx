@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function ResetPassword() {
     const params = useSearchParams();
@@ -16,10 +17,10 @@ export default function ResetPassword() {
         const newPassword = passwordRef.current?.value;
         const checkPassword = checkPasswordRef.current?.value;
         if(!id || !newPassword) {
-            return alert("비밀번호를 입력하세요.");
+            return toast.error("비밀번호를 입력하세요.");
         }
         if(newPassword !== checkPassword) {
-            return alert("비밀번호가 일치하지 않습니다.");
+            return toast.error("비밀번호가 일치하지 않습니다.");
         }
         setLoading(true);
 
@@ -32,15 +33,15 @@ export default function ResetPassword() {
 
             if(!res.ok) {
                 const data = await res.json();
-                alert(data.message || "비밀번호 변경 실패");
+                toast.error(data.message || "비밀번호 변경 실패");
                 return;
             }
 
-            alert("비밀번호가 성공적으로 변경되었습니다.");
-            router.push("/petcare");
+            toast.error("비밀번호가 성공적으로 변경되었습니다.");
+            router.push("/");
         }
         catch {
-            alert("비밀번호 변경 중 오류가 발생했습니다.");
+            toast.error("비밀번호 변경 중 오류가 발생했습니다.");
         }
         finally {
             setLoading(false);

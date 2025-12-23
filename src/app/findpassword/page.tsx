@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast";
 
 export default function FindPassword() {
     const idRef = useRef<HTMLInputElement>(null);
@@ -11,7 +12,7 @@ export default function FindPassword() {
     const checkid = async () => {
         const id = idRef.current?.value;
         if (!id) {
-            return alert("아이디를 입력하세요.")
+            return toast.error("아이디를 입력하세요.")
         }
         setLoading(true);
         try {
@@ -23,15 +24,15 @@ export default function FindPassword() {
 
             const data = await res.json();
             if (!res.ok) {
-                alert(data.message || "존재하지 않는 아이디입니다.");
+                toast.error(data.message || "존재하지 않는 아이디입니다.");
                 idRef.current!.value = "";
                 return;
             }
 
-            router.push(`resetpassword?id=${encodeURIComponent(id)}`);
+            router.push(`/resetpassword?id=${encodeURIComponent(id)}`);
         }
         catch {
-            alert("아이디 확인 중 오류가 발생했습니다.");
+            toast.error("아이디 확인 중 오류가 발생했습니다.");
         }
         finally {
             setLoading(false);

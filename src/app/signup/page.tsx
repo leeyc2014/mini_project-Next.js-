@@ -2,6 +2,7 @@
 
 import { useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function SignUp() {
     const idRef = useRef<HTMLInputElement>(null);
@@ -22,13 +23,13 @@ export default function SignUp() {
         const checkPassword = checkPasswordRef.current?.value;
 
         if (!id || !username || !password || !checkPassword) {
-            alert('모든 항목을 입력해주세요.');
+            toast.error('모든 항목을 입력해주세요.');
             setLoading(false);
             return;
         }
 
         if (password !== checkPassword) {
-            alert("비밀번호가 일치하지 않습니다.");
+            toast.error("비밀번호가 일치하지 않습니다.");
             setLoading(false);
             return;
         }
@@ -37,18 +38,18 @@ export default function SignUp() {
             const res = await fetch("/api/members", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, password }),
+                body: JSON.stringify({ userid: id, username, password }),
             });
             if (!res.ok) {
-                alert("회원가입 실패");
+                toast.error("회원가입 실패");
                 setLoading(false);
                 return;
             }
-            alert("회원가입 성공");
+            toast.error("회원가입 성공");
             router.push("/");
         }
         catch (err) {
-            alert('회원가입 중 오류가 발생했습니다.');
+            toast.error('회원가입 중 오류가 발생했습니다.');
         }
         finally {
             setLoading(false);

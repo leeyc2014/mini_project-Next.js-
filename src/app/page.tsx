@@ -2,21 +2,25 @@
 
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { userAtom } from "@/atoms/atoms";
-import { useAtom } from "jotai";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 export default function Home() {
-  const [user, setUser] = useAtom(userAtom);
-  const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
   const router = useRouter();
 
+  const [loading, setLoading] = useState(false);
   const [rememberId, setRememberId] = useState(false);
 
   const idRef = useRef<HTMLInputElement>(null);
-  const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if(status === "authenticated") {
+      router.replace("/dashboard");
+    }
+  }, [status, router]);
 
   useEffect(() => {
     const savedid = localStorage.getItem("savedid");
@@ -31,34 +35,30 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
 
-    const id = idRef.current?.value;
-    const username = usernameRef.current?.value;
+    const userid = idRef.current?.value;
     const password = passwordRef.current?.value;
 
-    if (!id || !password) {
-      alert("아이디과 비밀번호를 입력해주세요.");
+    if (!userid || !password) {
+      toast.error("아이디과 비밀번호를 입력해주세요.");
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("/api/member", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, username, password }),
-      }
-      );
+      const res = await signIn("credentials", {
+        userid,
+        password,
+        redirect: true,
+        callbackUrl: "/dashboard",
+      });
 
-      if (!res.ok) {
-        alert("로그인 실패");
+      if (res?.error) {
+        toast.error("로그인 실패");
         return;
       }
 
-      const userData = await res.json();
-      setUser(userData);
-
       if (rememberId) {
-        localStorage.setItem("savedid", id);
+        localStorage.setItem("savedid", userid);
       }
       else {
         localStorage.removeItem("savedid");
@@ -67,7 +67,7 @@ export default function Home() {
       router.push("/dashboard");
     }
     catch (err) {
-      alert("로그인 중 오류 발생");
+      toast.error("로그인 중 오류 발생");
     }
     finally {
       setLoading(false);
@@ -76,9 +76,15 @@ export default function Home() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    await signIn("google", { callbackUrl: "/dashboard" });
+    await signIn("google", {
+      redirect: true,
+      callbackUrl: "/dashboard",
+    });
   };
 
+  if(status === "loading") {
+    return <p className="text-center mt-20 text-4xl font-bold">Loading...</p>
+  }
 
   return (
     <section className="bg-gray-50">
@@ -89,11 +95,11 @@ export default function Home() {
             <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
               <div>
                 <label htmlFor="id" className="block mb-2 text-sm font-medium text-gray-900">아이디</label>
-                <input type="id" name="id" id="id" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="아이디 입력" ref={idRef} />
+                <input type="text" name="userid" id="userid" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-black block w-full p-2.5" placeholder="아이디 입력" ref={idRef} />
               </div>
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">비밀번호</label>
-                <input type="password" name="password" id="password" placeholder="비밀번호 입력" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" ref={passwordRef} />
+                <input type="password" name="password" id="password" placeholder="비밀번호 입력" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-black block w-full p-2.5" ref={passwordRef} />
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-start">
@@ -116,7 +122,7 @@ export default function Home() {
                 <img src="/google.svg" alt="Google" className="w-5 h-5" />Google 로그인
               </button>
               <div className="flex justify-end text-sm font-light text-gray-500">
-                <Link href="/signup" className="font-medium cursor-pointer">회원가입</Link>
+                <Link href="/signup" className="font-medium cursor-pointer hover:underline">회원가입</Link>
               </div>
             </form>
           </div>
