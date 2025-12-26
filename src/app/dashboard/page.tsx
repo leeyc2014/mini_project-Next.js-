@@ -1,17 +1,58 @@
 'use client'
 
-import { useSession } from "next-auth/react";
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
+
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { signOut } from "next-auth/react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
 export default function page() {
-
+  const mapRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
   const router = useRouter();
   const role = session?.user?.role;
+
+  useEffect(() => {
+    const initMap = () => {
+      if (!mapRef.current) {
+        return;
+      };
+
+      const map = new window.kakao.maps.Map(mapRef.current, {
+        center: new window.kakao.maps.LatLng(37.5665, 126.9780),
+        level: 3,
+      });
+      new window.kakao.maps.Marker({
+        position: map.getCenter(),
+        map,
+      });
+    };
+
+    if (window.kakao?.maps?.LatLng) {
+      initMap();
+      return;
+    }
+
+    if (document.getElementById("kakao-map-sdk")) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = "kakao-map-sdk";
+    script.async = true;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`;
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      window.kakao.maps.load(initMap);
+    };
+  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -39,10 +80,13 @@ export default function page() {
           {role === "admin" && (
             <Link href="/admin/membersdata" className="font-bold text-center">회원 관리</Link>
           )}
-          <Link href="/dashboard/mypage" className="font-bold text-center">내 정보</Link>
+          {role === "member" && (
+            <Link href="/dashboard/mypage" className="font-bold text-center">내 정보</Link>
+          )}
           <p onClick={handleLogout} className="font-bold rounded cursor-pointer text-center">로그아웃</p>
         </div>
       </section>
+      <div ref={mapRef} className="w-full h-100" />
     </div>
   )
 }
