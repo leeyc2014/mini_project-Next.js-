@@ -1,62 +1,19 @@
-'use client'
-
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
+'use client';
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-export default function page() {
-  const mapRef = useRef<HTMLDivElement>(null);
+export default function Page() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const role = session?.user?.role;
 
   useEffect(() => {
-    const initMap = () => {
-      if (!mapRef.current) {
-        return;
-      };
-
-      const map = new window.kakao.maps.Map(mapRef.current, {
-        center: new window.kakao.maps.LatLng(37.5665, 126.9780),
-        level: 3,
-      });
-      new window.kakao.maps.Marker({
-        position: map.getCenter(),
-        map,
-      });
-    };
-
-    if (window.kakao?.maps?.LatLng) {
-      initMap();
-      return;
-    }
-
-    if (document.getElementById("kakao-map-sdk")) {
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.id = "kakao-map-sdk";
-    script.async = true;
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_KEY}&autoload=false`;
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      window.kakao.maps.load(initMap);
-    };
-  }, []);
-
-  useEffect(() => {
     if (status === "unauthenticated") {
-      toast.error("로그인이 필요합니다.")
+      toast.error("로그인이 필요합니다.");
       router.push("/");
     }
   }, [status, router]);
@@ -73,20 +30,29 @@ export default function page() {
   };
 
   return (
-    <div className="m-5">
+    <div className="flex flex-col w-full h-full my-5 pr-5">
       <section className="flex flex-col items-end gap-4">
         <p className="text-end"><span className="font-bold text-2xl text-blue-900 pr-2">{session?.user?.id}</span>님</p>
         <div className="flex flex-row gap-3">
           {role === "admin" && (
-            <Link href="/admin/membersdata" className="font-bold text-center">회원 관리</Link>
+            <Link href="/admin/membersdata" className="font-bold text-center">
+              회원 관리
+            </Link>
           )}
           {role === "member" && (
-            <Link href="/dashboard/mypage" className="font-bold text-center">내 정보</Link>
+            <Link href="/dashboard/mypage" className="font-bold text-center">
+              내 정보
+            </Link>
           )}
+          <Link href="/mapsearch" className="font-bold text-center">
+            지도 검색
+          </Link>
+          <Link href="/listsearch" className="font-bold text-center">
+            목록 검색
+          </Link>
           <p onClick={handleLogout} className="font-bold rounded cursor-pointer text-center">로그아웃</p>
         </div>
       </section>
-      <div ref={mapRef} className="w-full h-100" />
     </div>
-  )
+  );
 }
