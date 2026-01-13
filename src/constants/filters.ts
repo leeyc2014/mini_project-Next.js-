@@ -28,3 +28,20 @@ export const PET_ONLY_MAP: Record<string, number> = {
     '해당없음': 0,
     '반려동물전용': 1,
 };
+
+export const PLACE_TYPE_MAP: Record<string, string> = {
+    '실내 동반 가능': 'IN',
+    '실외 동반 가능': 'OUT',
+};
+
+export const PARKING_POSS_MAP: Record<string, string> = {
+    '주차 가능': 'Y',
+    '주차 불가능': 'N',
+}
+
+export const PET_CHARGE_MAP: Record<string, string> = {
+    '무료': 'FREE',
+    '5천원 이하': 'UNDER_5000',
+    '1만원 이하': 'UNDER_10000',
+    '1만원 초과': 'OVER_10000',
+};

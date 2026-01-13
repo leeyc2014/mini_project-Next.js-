@@ -56,6 +56,15 @@ export async function GET(req: NextRequest) {
         .map(Number)
         .filter(v => !isNaN(v));
 
+    /* ===== 실내 / 실외 ===== */
+    const inPlace = searchParams.get('inPlace');
+    const outPlace = searchParams.get('outPlace');
+
+    /* ===== 주차 가능 여부 ===== */
+    const parking = searchParams.get('parking');
+
+    /* ===== 추가 요금 ===== */
+    const petCharge = searchParams.get('petCharge');
 
     /* ===== WHERE 생성 ===== */
     let where = `WHERE 1=1`;
@@ -85,7 +94,7 @@ export async function GET(req: NextRequest) {
         params.push(sigCd);
     }
     if (dongCd) {
-        where += ` AND l.dong_cd = ?`;
+        where += ` AND l.legaldong_cd = ?`;
         params.push(dongCd);
     }
 
@@ -148,6 +157,52 @@ export async function GET(req: NextRequest) {
         params.push(...petOnlyValues);
     }
 
+    /* ===== 실내 / 실외 ===== */
+    if (inPlace === 'Y' && outPlace === 'Y') {
+        where += `
+    AND pf.IN_PLACE_ACP_POSBL_AT = 'Y'
+    OR pf.OUT_PLACE_ACP_POSBL_AT = 'Y'
+  `;
+    } else {
+        if (inPlace === 'Y') {
+            where += ` AND pf.IN_PLACE_ACP_POSBL_AT = 'Y'`;
+        }
+        if (outPlace === 'Y') {
+            where += ` AND pf.OUT_PLACE_ACP_POSBL_AT = 'Y'`;
+        }
+    }
+
+
+    /* ===== 주차 가능 여부 ===== */
+    if (parking === 'Y') {
+        where += ` AND e.PARKNG_POSBL_AT = 'Y'`;
+    }
+
+    if (parking === 'N') {
+        where += ` AND e.PARKNG_POSBL_AT = 'N'`;
+    }
+
+    /* ===== 추가 요금 ===== */
+    if (petCharge === 'FREE') {
+        where += ` AND cf.PET_CHARGE_TYPE = 'FREE'`;
+    }
+
+    if (petCharge === 'UNDER_5000') {
+        where += ` AND cf.PET_CHARGE_MAX > 0 AND cf.PET_CHARGE_MAX <= 5000`;
+    }
+
+    if (petCharge === 'UNDER_10000') {
+        where += ` AND cf.PET_CHARGE_MAX > 0 AND cf.PET_CHARGE_MAX <= 10000`;
+    }
+
+    if (petCharge === 'OVER_10000') {
+        where += `
+    AND (
+      cf.PET_CHARGE_MIN > 10000
+      OR cf.PET_CHARGE_MAX > 10000
+    )
+  `;
+    }
 
     /* ===== SQL ===== */
     const sql = `
@@ -162,17 +217,36 @@ export async function GET(req: NextRequest) {
     LEFT JOIN categorydata c ON p.id = c.id
     LEFT JOIN sizefilterdata s ON p.id = s.place_id
     LEFT JOIN infofilterdata i ON p.id = i.place_id
+    LEFT JOIN petfilterdata pf ON p.id = pf.id
+    LEFT JOIN extrafilterdata e ON p.id = e.id
+    LEFT JOIN chargefilterdata cf ON p.id = cf.place_id
     ${where}
     LIMIT ? OFFSET ?
-  `;
+    `;
+
+    /* ===== totalCount SQL ===== */
+    const countSql = `
+   SELECT COUNT(DISTINCT p.id) AS total
+    FROM place p
+    JOIN holidaydata h ON p.id = h.place_id
+    LEFT JOIN locationdata l ON p.id = l.id
+    LEFT JOIN categorydata c ON p.id = c.id
+    LEFT JOIN sizefilterdata s ON p.id = s.place_id
+    LEFT JOIN infofilterdata i ON p.id = i.place_id
+    LEFT JOIN petfilterdata pf ON p.id = pf.id
+    LEFT JOIN extrafilterdata e ON p.id = e.id
+    LEFT JOIN chargefilterdata cf ON p.id = cf.place_id
+    ${where}
+    `;
 
     params.push(size, offset);
 
-    const [rows] = await pool.query(sql, params);
+    const [rows] = await pool.query(sql, [...params, size, offset]);
+    const [countRows]: any = await pool.query(countSql, params);
 
     return NextResponse.json({
-        page,
-        size,
         data: rows,
+        totalCount: countRows[0]?.total ?? 0,
     });
+
 }

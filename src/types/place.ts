@@ -11,4 +11,5 @@ export interface PlaceResponse {
   page: number;
   size: number;
   data: Place[];
+  totalCount: number;
 }
