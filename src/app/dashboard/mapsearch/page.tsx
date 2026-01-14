@@ -149,10 +149,7 @@ export default function Page() {
 
     return (
         <div className="flex flex-col w-full">
-            <p className="text-3xl font-bold my-3 text-center">지도 검색</p>
-            <Link href="/dashboard" className="text-end font-bold text-2xl text-gray-400 hover:text-black px-4">
-              뒤로가기
-            </Link>
+            <h1 className="text-3xl font-bold my-3 text-center px-4">지도 검색</h1>
             <div className="flex flex-row">
                 <div className="flex flex-col border p-3 rounded container w-3/5 m-3">
                     <div className="flex flex-row mb-2 justify-between">

@@ -20,7 +20,6 @@ import {
     PET_CHARGE_MAP,
 } from '@/constants/filters';
 
-
 export default function SearchFilter() {
     const [ctpCd, setCtpCd] = useState("");
     const [sigCd, setSigCd] = useState("");

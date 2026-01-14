@@ -42,9 +42,6 @@ export default async function PlacesPage({ searchParams }: PageProps) {
               <h1 className="text-2xl font-extrabold text-gray-900">장소 검색</h1>
               <p className="text-gray-500 mt-1">총{' '}<span className="text-indigo-600 font-bold">{data.totalCount}</span>개의 장소를 찾았습니다.</p>
             </div>
-            <Link href="/dashboard" className="font-bold text-2xl text-gray-400 hover:text-black">
-              뒤로가기
-            </Link>
           </header>
 
           {/* 🔥 검색 결과 (Client Component) */}
