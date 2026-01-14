@@ -50,6 +50,9 @@ export default function Page() {
           <Link href="/listsearch" className="font-bold text-center">
             목록 검색
           </Link>
+          <Link href="chart" className="font-bold text-center">
+            차트
+          </Link>
           <p onClick={handleLogout} className="font-bold rounded cursor-pointer text-center">로그아웃</p>
         </div>
       </section>

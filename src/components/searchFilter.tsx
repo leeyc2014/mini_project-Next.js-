@@ -40,11 +40,6 @@ export default function SearchFilter() {
     const [inPlace, setInPlace] = useState<string | null>(null);
     const [outPlace, setOutPlace] = useState<string | null>(null);
 
-    const clearPlaceFilter = () => {
-        setInPlace(null);
-        setOutPlace(null);
-    };
-
     const [parking, setParking] = useState<string | null>(null);
 
     const [charge, setCharge] = useState<string | null>(null);
@@ -167,7 +162,7 @@ export default function SearchFilter() {
                         <label className="text-m font-bold text-gray-800">입장 가능 크기</label>
                         <div className="grid grid-cols-3 gap-2 mt-5">
                             {Object.entries(PET_SIZE_MAP).map(([label, value]) => (
-                                <label key={value} className="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer hover:bg-blue-50 transition-colors has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                                <label key={value} className="flex flex-col items-center justify-center p-3 border rounded-xl cursor-pointer hover:bg-blue-50 transition-colors has-checked:border-blue-500 has-checked:bg-blue-50">
                                     <input type="checkbox" name="petSize" value={value} className="hidden" />
                                     <span className="text-xs font-medium">{label}</span>
                                 </label>

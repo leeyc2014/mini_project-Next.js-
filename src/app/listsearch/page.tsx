@@ -1,5 +1,5 @@
 import Pagination from '@/components/paging';
-import SearchFilter from '@/components/searchFilter';
+import SearchFilter from '@/components/searchfilter';
 import PlaceList from '@/components/placelist/placelist';
 
 import { PlaceResponse } from '@/types/place';
