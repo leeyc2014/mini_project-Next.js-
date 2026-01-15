@@ -18,7 +18,7 @@ export default function NavLink({ href, children }: NavLinkProps) {
       {children}
 
       {/* underline */}
-      <span className={clsx("absolute -bottom-2 left-0 h-[2px] w-full bg-blue-600 transition-transform", isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100")} />
+      <span className={clsx("absolute -bottom-2 left-0 h-0.5 w-full bg-blue-600 transition-transform", isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100")} />
     </Link>
   );
 }

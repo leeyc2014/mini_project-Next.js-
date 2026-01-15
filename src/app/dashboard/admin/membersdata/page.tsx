@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-import MembersData from "@/components/members";
-import GoogleMembersData from "@/components/googlemembers";
+import MembersData from "@/components/member/members";
+import GoogleMembersData from "@/components/member/googlemembers";
 
 export default function Page() {
     const { data: session, status } = useSession();

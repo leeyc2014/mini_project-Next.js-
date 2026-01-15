@@ -4,7 +4,7 @@ import { useState, useRef, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-export default function SignUp() {
+export default function MyPage() {
     const idRef = useRef<HTMLInputElement>(null);
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -41,15 +41,15 @@ export default function SignUp() {
                 body: JSON.stringify({ userid: id, username, password }),
             });
             if (!res.ok) {
-                toast.error("회원가입 실패");
+                toast.error("정보수정 실패");
                 setLoading(false);
                 return;
             }
-            toast.error("회원가입 성공");
+            toast.error("정보수정 성공");
             router.push("/");
         }
         catch (err) {
-            toast.error('회원가입 중 오류가 발생했습니다.');
+            toast.error('정보수정 중 오류가 발생했습니다.');
         }
         finally {
             setLoading(false);
@@ -78,7 +78,7 @@ export default function SignUp() {
                         <input type="password" id="checkPassword" ref={checkPasswordRef} className="w-full p-2 border rounded" placeholder="비밀번호 확인" />
                     </div>
                     <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 cursor-pointer">
-                        {loading ? "가입 중..." : "회원가입"}
+                        {loading ? "수정 중..." : "회원정보수정"}
                     </button>
                 </form>
             </div>

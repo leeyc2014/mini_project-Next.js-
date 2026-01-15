@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from "react";
 
-import RegionSelect from "@/components/selectbox";
+import RegionSelect from "@/components/search/regionselectbox";
 import CategorySelect from "@/components/category/checkbox";
-import SearchSummary from "@/components/searchsummary";
+import SearchSummary from "@/components/search/searchsummary";
 import dynamic from "next/dynamic";
 import toast from "react-hot-toast";
-import Link from "next/link";
 
 type SearchMode = "region" | "category" | "both";
 
@@ -47,11 +46,6 @@ export default function Page() {
     const [selectedPlaceId, setSelectedPlaceId] = useState<number | null>(null);
     const [placeDetail, setPlaceDetail] = useState<any>(null);
 
-    const [ctp, setCtp] = useState({ cd: "", nm: "" });
-    const [sig, setSig] = useState({ cd: "", nm: "" });
-    const [dong, setDong] = useState({ cd: "", nm: "" });
-
-
     const handleSearch = async () => {
         let url = "";
 
@@ -67,7 +61,7 @@ export default function Page() {
                 return;
             }
 
-            url = `/api/place/regionsearch?${params.toString()}`;
+            url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/regionsearch?${params.toString()}`;
         }
 
         /** 카테고리 */
@@ -83,7 +77,7 @@ export default function Page() {
                 return;
             }
 
-            url = `/api/place/categorysearch?${params.toString()}`;
+            url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/categorysearch?${params.toString()}`;
         }
 
         /** 통합 */
@@ -106,7 +100,7 @@ export default function Page() {
                 return;
             }
 
-            url = `/api/place/bothsearch?${params.toString()}`; // 👉 통합용 API
+            url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/bothsearch?${params.toString()}`; // 👉 통합용 API
         }
 
         const res = await fetch(url);
@@ -138,7 +132,7 @@ export default function Page() {
 
         const fetchDetail = async () => {
             const res = await fetch(
-                `api/place/detail?id=${selectedPlaceId}`
+                `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/detail?id=${selectedPlaceId}`
             );
             const data = await res.json();
             setPlaceDetail(data);

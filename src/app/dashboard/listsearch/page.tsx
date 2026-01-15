@@ -1,9 +1,8 @@
 import Pagination from '@/components/paging';
-import SearchFilter from '@/components/searchfilter';
+import SearchFilter from '@/components/search/searchfilter';
 import PlaceList from '@/components/placelist/placelist';
 
 import { PlaceResponse } from '@/types/place';
-import Link from 'next/link';
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | undefined }>;

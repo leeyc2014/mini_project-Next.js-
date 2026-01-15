@@ -7,8 +7,6 @@ import WeekdayChart from "@/components/chart/weekdaychart";
 import CategoryHourChart from "@/components/chart/categoryhourchart";
 import TwentyFourHourChart from "@/components/chart/24houroperchart";
 
-import Link from "next/link";
-
 interface Kpi {
     total: number;
     open_now: number;

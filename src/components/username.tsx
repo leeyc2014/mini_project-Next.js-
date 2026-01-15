@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
-export default function Page() {
+export default function UserName() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const role = session?.user?.role;
