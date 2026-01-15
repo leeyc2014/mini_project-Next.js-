@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
                 const { userid, password } = credentials;
 
                 const [rows]: any = await pool.query(
-                    'SELECT members.userid, members.role, member_passwords.password FROM members JOIN member_passwords ON members.userid = member_passwords.userid WHERE members.userid = ?',
+                    'SELECT members.userid, members.role,members.username, member_passwords.password FROM members JOIN member_passwords ON members.userid = member_passwords.userid WHERE members.userid = ?',
                     [userid]
                 );
 
@@ -39,6 +39,7 @@ export const authOptions: NextAuthOptions = {
                 return {
                     id: rows[0].userid,
                     role: rows[0].role,
+                    name: rows[0].username,
                 };
             },
         })
@@ -74,6 +75,7 @@ export const authOptions: NextAuthOptions = {
             if (account?.provider === "credentials" && user) {
                 token.id = user.id;               // credentials
                 token.role = user.role;
+                token.name = user.name;
             }
             if (account?.provider === "google") {
                 token.id = user.email;            // google      
@@ -86,6 +88,7 @@ export const authOptions: NextAuthOptions = {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role;
+                session.user.name = token.name as string;
             }
             return session;
         }

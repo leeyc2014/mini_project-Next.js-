@@ -1,67 +1,97 @@
 'use client';
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { BoardPost } from "@/types/board";
+import { Comment } from "@/types/comment";
+import BoardComment from "./boardcomment";
 
-export default function BoardDetail({ post, }: { post: BoardPost | null; }) {
-    const [detail, setDetail] = useState<BoardPost | null>(null);
-    const [loading, setLoading] = useState(false);
+interface Props {
+  postId: number | null;
+}
 
-    useEffect(() => {
-        if (!post?.id) {
-            setDetail(null);
-            return;
-        }
-        setLoading(true);
-        fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${post.id}`)
-            .then(res => res.json())
-            .then(data => setDetail(data))
-            .finally(() => setLoading(false));
-    }, [post?.id]);
+export default function BoardDetail({ postId }: Props) {
+  const { data: session } = useSession();
+  const [detail, setDetail] = useState<BoardPost | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState("");
 
-    if (!post) {
-        return (
-            <div className="rounded-xl bg-white border p-8 text-center text-gray-400">
-                게시글을 선택하세요
-            </div>
-        );
+  // 게시글 상세 + 댓글 fetch
+  useEffect(() => {
+    if (!postId) {
+      setDetail(null);
+      setComments([]);
+      return;
     }
 
-    if (loading || !detail) {
-        return (
-            <div className="rounded-xl bg-white border p-8 text-center text-gray-400"> 
-                로딩 중...
-            </div>
-        );
-    }
+    const fetchDetail = async () => {
+      try {
+        const resPost = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${postId}`);
+        const postData: BoardPost = await resPost.json();
+        setDetail(postData);
 
+        const resComment = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${postId}/comment`);
+        const commentData: Comment[] = await resComment.json();
+        setComments(commentData);
+      } catch (err) {
+        console.error("게시글 상세 불러오기 실패:", err);
+        setDetail(null);
+        setComments([]);
+      }
+    };
+
+    fetchDetail();
+  }, [postId]);
+
+  // 댓글 등록
+  const handleCommentSubmit = async (parentId?: number) => {
+    if (!commentText.trim() || !postId) return;
+
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${postId}/comment`, {
+      method: "POST",
+      body: JSON.stringify({
+        content: commentText,
+        parent_id: parentId || null,
+      }),
+    });
+
+    setCommentText("");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${postId}/comment`);
+    setComments(await res.json());
+  };
+
+  // 댓글 삭제
+  const handleDeleteComment = async (commentId: number) => {
+    if (!postId) return;
+
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/comment/${commentId}`, {
+      method: "DELETE",
+    });
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${postId}/comment`);
+    setComments(await res.json());
+  };
+
+  if (!detail) {
     return (
-        <div className="rounded-xl bg-white border shadow-sm p-6 space-y-4">
-            <div>
-                <h2 className="text-xl font-bold">{detail.title}</h2>
-                <p className="text-sm text-gray-500 mt-1">
-                    {detail.author_name} · {new Date(detail.created_at).toLocaleString()}
-                </p>
-            </div>
-            <hr />
-            <div className="text-sm leading-relaxed whitespace-pre-line">
-                {detail.content}
-            </div>
-            <hr />
-            {/* 댓글 영역 placeholder */}
-            <div className="text-sm text-gray-400">
-                댓글
-            </div>
-
-            {/* 작성자만 보이게 */}
-            <div className="flex justify-end gap-2">
-                <button className="px-3 py-1 text-sm border rounded hover:bg-gray-50">
-                    수정
-                </button>
-                <button className="px-3 py-1 text-sm border rounded text-red-600 hover:bg-red-50">
-                    삭제
-                </button>
-            </div>
-        </div>
+      <div className="rounded-xl bg-white border p-8 text-center text-gray-400">
+        게시글을 선택하세요
+      </div>
     );
+  }
+
+  return (
+    <div className="rounded-xl bg-white border p-6 space-y-4">
+      <h2 className="text-xl font-bold">{detail.title}</h2>
+      <p className="text-sm text-gray-500">
+        {detail.author_name} · {new Date(detail.created_at).toLocaleString()}
+      </p>
+
+      <div className="whitespace-pre-line text-sm">{detail.content}</div>
+
+      <BoardComment
+        boardId={detail.id}
+      />
+    </div>
+  );
 }

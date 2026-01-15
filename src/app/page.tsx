@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
@@ -12,79 +12,57 @@ export default function Home() {
 
   const [loading, setLoading] = useState(false);
   const [rememberId, setRememberId] = useState(false);
-
-  const idRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const [userid, setUserid] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
-    if(status === "authenticated") {
-      router.replace("/dashboard");
-    }
+    if (status === "authenticated") router.replace("/dashboard");
   }, [status, router]);
 
   useEffect(() => {
     const savedid = localStorage.getItem("savedid");
-
-    if (savedid && idRef.current) {
-      idRef.current.value = savedid;
-      setRememberId(true);
-    }
+    
+    if (savedid) { setUserid(savedid); setRememberId(true); }
   }, []);
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     setLoading(true);
 
-    const userid = idRef.current?.value;
-    const password = passwordRef.current?.value;
-
-    if (!userid || !password) {
-      toast.error("아이디과 비밀번호를 입력해주세요.");
-      setLoading(false);
-      return;
-    }
+    if (!userid || !password) { toast.error("아이디와 비밀번호를 입력해주세요."); setLoading(false); return; }
 
     try {
-      const res = await signIn("credentials", {
-        userid,
-        password,
-        redirect: true,
-        callbackUrl: "/dashboard",
-      });
+      const res = await signIn("credentials", { userid, password, redirect: false });
 
-      if (res?.error) {
-        toast.error("로그인 실패");
-        return;
+      if (res?.error) { 
+        toast.error("로그인 실패"); 
+        if (!rememberId) {
+          setUserid(""); // 아이디 저장 체크 없으면 아이디도 초기화
+        }
+        setPassword(""); // 비밀번호는 항상 초기화
+        return; 
       }
 
-      if (rememberId) {
-        localStorage.setItem("savedid", userid);
-      }
-      else {
-        localStorage.removeItem("savedid");
-      }
+      rememberId ? localStorage.setItem("savedid", userid) : localStorage.removeItem("savedid");
 
       router.push("/dashboard");
+    } 
+    catch (err) { 
+      toast.error("로그인 중 오류 발생"); 
     }
-    catch (err) {
-      toast.error("로그인 중 오류 발생");
-    }
-    finally {
-      setLoading(false);
+    finally { 
+      setLoading(false); 
     }
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    await signIn("google", {
-      redirect: true,
-      callbackUrl: "/dashboard",
-    });
+    
+    await signIn("google", { redirect: true, callbackUrl: "/dashboard" });
   };
 
-  if(status === "loading") {
-    return <p className="text-center mt-20 text-4xl font-bold">Loading...</p>
-  }
+  if (status === "loading") return <p className="text-center mt-20 text-4xl font-bold">Loading...</p>;
 
   return (
     <section className="bg-gray-50">
@@ -94,12 +72,12 @@ export default function Home() {
             <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl">로그인</h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
               <div>
-                <label htmlFor="id" className="block mb-2 text-sm font-medium text-gray-900">아이디</label>
-                <input type="text" name="userid" id="userid" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-black block w-full p-2.5" placeholder="아이디 입력" ref={idRef} />
+                <label htmlFor="userid" className="block mb-2 text-sm font-medium text-gray-900">아이디</label>
+                <input type="text" name="userid" id="userid" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-black block w-full p-2.5" placeholder="아이디 입력" value={userid} onChange={(e) => setUserid(e.target.value)} />
               </div>
               <div>
                 <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">비밀번호</label>
-                <input type="password" name="password" id="password" placeholder="비밀번호 입력" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-black block w-full p-2.5" ref={passwordRef} />
+                <input type="password" name="password" id="password" placeholder="비밀번호 입력" className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-black block w-full p-2.5" value={password} onChange={(e) => setPassword(e.target.value)} />
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-start">

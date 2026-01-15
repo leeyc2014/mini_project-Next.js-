@@ -19,10 +19,13 @@ export async function GET(
       author_id,
       author_name,
       is_deleted,
-      created_at
+      created_at,
+      updated_at
     FROM board_comment
     WHERE board_id = ?
+    AND is_deleted = 0
     ORDER BY created_at ASC
+
     `,
     [id]
   );
@@ -31,31 +34,36 @@ export async function GET(
 }
 
 export async function POST(
-    req: NextRequest,
-    context: { params: Promise<{ id: string }> }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
-    const session = await getServerSession(authOptions);
-    if(!session) {
-        return NextResponse.json({ message: "Unauthorized"}, { status: 401})
-    }
+  const session = await getServerSession(authOptions);
 
-    const { id } = await context.params;
-    const { content, parent_id } = await req.json();
+  const authorId = session?.user.id;
+  const authorName = session?.user.name ?? "익명";
 
-    await pool.query(
-        `
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
+  }
+
+  const { id } = await context.params;
+  const { content, parent_id } = await req.json();
+
+  await pool.query(
+    `
         INSERT INTO board_comment
             (board_id, parent_id, content, author_id, author_name)
         VALUES (?, ?, ?, ?, ?)
         `,
-        [
-            id,
-            parent_id || null,
-            content,
-            session.user.id,
-            session.user.name,
-        ]
-    );
+    [
+      id,
+      parent_id || null,
+      content,
+      authorId,
+      authorName,
+    ]
+  );
 
-    return NextResponse.json({ success: true });
+
+  return NextResponse.json({ success: true });
 }

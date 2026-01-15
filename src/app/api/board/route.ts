@@ -5,26 +5,31 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
 
+        /* ===== 검색 ===== */
         const searchType = searchParams.get("searchType"); // title | content | author
         const keyword = searchParams.get("keyword");
+
+        /* ===== 페이징 ===== */
         const page = Number(searchParams.get("page") || 1);
         const limit = 10;
         const offset = (page - 1) * limit;
 
-        let where = "";
+        /* ===== WHERE 생성 ===== */
+        let where = "WHERE 1=1"; // 기본
         const values: any[] = [];
 
         if (keyword && searchType) {
             if (searchType === "title") {
-                where = "WHERE title LIKE ?";
+                where += " AND title LIKE ?";
             } else if (searchType === "content") {
-                where = "WHERE content LIKE ?";
+                where += " AND content LIKE ?";
             } else if (searchType === "author") {
-                where = "WHERE author_name LIKE ?";
+                where += " AND author_name LIKE ?";
             }
             values.push(`%${keyword}%`);
         }
 
+        /* ===== 게시글 가져오기 ===== */
         const [rows] = await pool.query(
             `
             SELECT id, title, author_name, created_at
@@ -36,9 +41,22 @@ export async function GET(req: NextRequest) {
             [...values, limit, offset]
         );
 
-        return NextResponse.json(rows);
+        /* ===== totalCount 계산 ===== */
+        const [countRows]: any = await pool.query(
+            `
+            SELECT COUNT(*) AS total
+            FROM board
+            ${where}
+            `,
+            values
+        );
+
+        return NextResponse.json({
+            items: rows,
+            total: countRows[0]?.total ?? 0,
+        });
     } catch (error) {
         console.error("Board list error:", error);
-        return NextResponse.json([], { status: 500 });
+        return NextResponse.json({ items: [], total: 0 }, { status: 500 });
     }
 }

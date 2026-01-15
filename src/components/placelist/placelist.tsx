@@ -11,7 +11,7 @@ export default function PlaceList({ data }: { data: any[] }) {
     setLoading(true);
 
     try {
-      const res = await fetch(`api/place/detail?id=${placeId}`);
+      const res = await fetch(`/api/place/detail?id=${placeId}`);
       const detail = await res.json();
       setSelectedPlace(detail);
     } catch (err) {

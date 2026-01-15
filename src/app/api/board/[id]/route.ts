@@ -35,7 +35,10 @@ export async function PUT(
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
   }
 
   const { id } = await context.params;
