@@ -28,7 +28,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
     /* 댓글 목록 로드 */
     const load = async () => {
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${boardId}/comment`
+            `/api/board/${boardId}/comment`
         );
         setComments(await res.json());
     };
@@ -43,7 +43,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
         if (!content.trim()) return;
 
         await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/board/${boardId}/comment`,
+            `/api/board/${boardId}/comment`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -65,7 +65,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
         if (!editText.trim()) return;
 
         await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/comment/${id}`,
+            `/api/comment/${id}`,
             {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
         if (!confirm("댓글을 삭제하시겠습니까?")) return;
 
         await fetch(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/api/comment/${id}`,
+            `/api/comment/${id}`,
             {
                 method: "DELETE",
             }
@@ -131,16 +131,16 @@ export default function BoardComment({ boardId }: { boardId: number }) {
                                 session?.user.role === "admin") && (
                                     <>
                                         {session?.user.id === c.author_id && (
-                                            <button onClick={() => { setEditId(c.id); setEditText(c.content); setReplyTo(null); }} className="hover:text-blue-500">
+                                            <button onClick={() => { setEditId(c.id); setEditText(c.content); setReplyTo(null); }} className="hover:text-blue-500 cursor-pointer">
                                                 수정
                                             </button>
                                         )}
-                                        <button onClick={() => remove(c.id)} className="hover:text-red-500">
+                                        <button onClick={() => remove(c.id)} className="hover:text-red-500 cursor-pointer">
                                             삭제
                                         </button>
                                     </>
                                 )}
-                            <button onClick={() => { setReplyTo(c.id); setReplyText(""); setEditId(null); }} className="hover:text-blue-500">
+                            <button onClick={() => { setReplyTo(c.id); setReplyText(""); setEditId(null); }} className="hover:text-blue-500 cursor-pointer">
                                 답글
                             </button>
                         </div>
@@ -150,7 +150,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
                     {replyTo === c.id && (
                         <div className="mt-2">
                             <textarea className="w-full border rounded p-2 text-sm" value={replyText} onChange={e => setReplyText(e.target.value)} />
-                            <button onClick={submit} className="text-xs mt-1 hover:text-blue-500">
+                            <button onClick={submit} className="text-xs mt-1 hover:text-blue-500 cursor-pointer">
                                 답글 작성
                             </button>
                         </div>
@@ -169,7 +169,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
             {/* 최상위 댓글 */}
             <div className="mt-4">
                 <textarea className="w-full border rounded p-2 text-sm" value={newText} onChange={e => setNewText(e.target.value)} placeholder="댓글을 입력하세요" />
-                <button onClick={submit} className="mt-1 text-sm hover:text-blue-500">
+                <button onClick={submit} className="mt-1 text-sm hover:text-blue-500 cursor-pointer">
                     댓글 작성
                 </button>
             </div>

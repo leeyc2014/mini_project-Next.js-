@@ -33,7 +33,9 @@ export default function SearchFilter() {
     const [threeCds, setThreeCds] = useState<string[]>([]);
     const [threeNmList, setThreeNmList] = useState<string[]>([]);
 
-    const [dayOfWeek, setDayOfWeek] = useState<string | null>(null);
+    const [dayOfWeek, setDayOfWeek] = useState<string[]>([]);
+    const [targetTime, setTargetTime] = useState<string>("");
+
     const [petOnly, setPetOnly] = useState<string | null>(null);
 
     const [inPlace, setInPlace] = useState<string | null>(null);
@@ -81,7 +83,7 @@ export default function SearchFilter() {
         setCheckParam(params, 'chuseokOpen', formData.get('chuseokOpen'));
         setCheckParam(params, 'christmasOpen', formData.get('christmasOpen'));
 
-        setSingleParam(params, 'dayOfWeek', formData.get('dayOfWeek'));
+        setMultiParam(params, 'dayOfWeek', formData.getAll('dayOfWeek'));
         setSingleParam(params, 'targetTime', formData.get('targetTime'));
 
         setSingleParam(params, 'parking', formData.get('parking'));
@@ -123,7 +125,7 @@ export default function SearchFilter() {
     }, []);
 
     return (
-        <form onSubmit={handleSearch} className="flex flex-col h-full overflow-hidden">
+        <form onSubmit={handleSearch} className="flex flex-col h-5/6 overflow-hidden">
             <div className="p-7 border-b bg-white flex justify-between items-center">
                 <h2 className="text-2xl font-black text-gray-900">상세 검색</h2>
                 <button type="reset" onClick={() => window.location.reload()} className="text-sm text-gray-400 hover:text-red-500 flex items-center gap-1 cursor-pointer">
@@ -234,17 +236,19 @@ export default function SearchFilter() {
                     <div className="space-y-3">
                         <div className="flex justify-between items-center">
                             <label className="text-m font-bold text-gray-800">요일/시간대 검색</label>
-                            <ClearFilterButton onClear={() => setDayOfWeek(null)} />
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {Object.entries(DAY_OF_WEEK_MAP).map(([label, value]) => (
-                                <label key={value} className={`px-3 py-1.5 border rounded-full text-xs transition-all cursor-pointer ${dayOfWeek === String(value) ? 'border-blue-600 bg-blue-50 text-blue-600 font-bold' : 'border-gray-100 text-gray-400'}`}>
-                                    <input type="radio" name="dayOfWeek" value={value} checked={dayOfWeek === String(value)} onChange={() => setDayOfWeek(String(value))} className="hidden" />
+                                <label key={value} className={`px-3 py-1.5 border rounded-full text-xs transition-all cursor-pointer ${dayOfWeek.includes(String(value)) ? 'border-blue-600 bg-blue-50 text-blue-600 font-bold' : 'border-gray-100 text-gray-400'}`}>
+                                    <input type="checkbox" name="dayOfWeek" value={String(value)} checked={dayOfWeek.includes(String(value))} onChange={() => setDayOfWeek(prev => prev.includes(String(value)) ? prev.filter(v => v !== String(value)) : [...prev, String(value)])} className="hidden" />
                                     {label}
                                 </label>
                             ))}
                         </div>
-                        <input type="time" name="targetTime" className="w-full mt-2 border-gray-200 rounded-lg text-sm focus:ring-blue-500" />
+                        <div className="flex justify-between">
+                            <input type="time" name="targetTime" value={targetTime} onChange={(e) => setTargetTime(e.target.value)} className="w-1/2 mt-2 border-gray-200 rounded-lg text-sm focus:ring-blue-500" />
+                            <ClearFilterButton onClear={() => setTargetTime('')} />
+                        </div>
                     </div>
                 </section>
 

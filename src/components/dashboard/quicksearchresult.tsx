@@ -1,4 +1,3 @@
-import Link from "next/link";
 
 interface Place {
     id: number;

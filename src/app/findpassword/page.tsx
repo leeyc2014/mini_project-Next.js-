@@ -16,10 +16,8 @@ export default function FindPassword() {
         }
         setLoading(true);
         try {
-            const res = await fetch("/api/members", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id }),
+            const res = await fetch(`/api/members/check?userid=${encodeURIComponent(id)}`, {
+                method: "GET",
             });
 
             const data = await res.json();

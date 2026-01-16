@@ -55,13 +55,20 @@ export default function PlaceDetailModal({ placeDetail, onClose }: Props) {
           <p>
             <b>홈페이지:</b>{' '}
             {!placeDetail.hmpg_url ? '-' : (
-              <a
-                href={placeDetail.hmpg_url}
-                target="_blank"
-                className="text-blue-600 underline break-all"
-              >
-                {placeDetail.hmpg_url}
-              </a>
+              <span className="flex flex-col gap-1 mt-1">
+                {placeDetail.hmpg_url
+                  .trim()
+                  .split(/\s/)
+                  .map((url: string, idx: number) => {
+                    const fixedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+
+                    return (
+                      <a key={idx} href={fixedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline break-all">
+                        {url}
+                      </a>
+                    );
+                  })}
+              </span>
             )}
           </p>
         </div>

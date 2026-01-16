@@ -21,7 +21,7 @@ export default function Home() {
 
   useEffect(() => {
     const savedid = localStorage.getItem("savedid");
-    
+
     if (savedid) { setUserid(savedid); setRememberId(true); }
   }, []);
 
@@ -35,30 +35,30 @@ export default function Home() {
     try {
       const res = await signIn("credentials", { userid, password, redirect: false });
 
-      if (res?.error) { 
-        toast.error("로그인 실패"); 
+      if (res?.error) {
+        toast.error("로그인 실패");
         if (!rememberId) {
           setUserid(""); // 아이디 저장 체크 없으면 아이디도 초기화
         }
         setPassword(""); // 비밀번호는 항상 초기화
-        return; 
+        return;
       }
 
       rememberId ? localStorage.setItem("savedid", userid) : localStorage.removeItem("savedid");
 
       router.push("/dashboard");
-    } 
-    catch (err) { 
-      toast.error("로그인 중 오류 발생"); 
     }
-    finally { 
-      setLoading(false); 
+    catch (err) {
+      toast.error("로그인 중 오류 발생");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    
+
     await signIn("google", { redirect: true, callbackUrl: "/dashboard" });
   };
 
@@ -67,6 +67,7 @@ export default function Home() {
   return (
     <section className="bg-gray-50">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <h1 className="text-3xl my-20 font-bold">전국 반려동물 동반 가능 시설</h1>
         <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl text-center font-bold text-gray-900 md:text-2xl">로그인</h1>

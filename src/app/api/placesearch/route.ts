@@ -32,15 +32,25 @@ export async function GET(req: NextRequest) {
     const size = Number(searchParams.get('size') || 10);
     const offset = (page - 1) * size;
 
+    /* ===== 운영 시간 =====*/
+    const dayOfWeekParams = searchParams.getAll('dayOfWeek');
+
+    const targetDays: number[] = dayOfWeekParams
+        .flatMap(v => v.split(','))
+        .map(Number)
+        .filter(v => !isNaN(v));
+
     /* ===== 현재 시간 ===== */
     const now = new Date();
     const nowDay = (now.getDay() + 6) % 7; // 일=0 → 월=0
     const nowTime = now.toTimeString().slice(0, 5);
 
-    const targetDay =
-        dayOfWeek !== null ? Number(dayOfWeek) : openNow ? nowDay : null;
     const targetTime =
         targetTimeParam ?? (openNow ? nowTime : null);
+
+    if (openNow && targetDays.length === 0) {
+        targetDays.push(nowDay);
+    }
 
     /* ===== 반려동물 크기 ===== */
     const petSizesStr: string[] = searchParams.getAll('petSize');
@@ -109,7 +119,7 @@ export async function GET(req: NextRequest) {
     }
 
     /* ===== 휴무일 ===== */
-    if (targetDay !== null) {
+    if (targetDays.length > 0) {
         const col = [
             'closed_mon',
             'closed_tue',
@@ -118,8 +128,8 @@ export async function GET(req: NextRequest) {
             'closed_fri',
             'closed_sat',
             'closed_sun',
-        ][targetDay];
-        where += ` AND h.${col} = 0`;
+        ];
+        where += ` AND (${targetDays.map(d => `h.${col[d]} = 0`).join(' OR ')})`;
     }
 
     if (holidayOpen) where += ` AND h.closed_holiday = 0`;
@@ -128,22 +138,32 @@ export async function GET(req: NextRequest) {
     if (christmasOpen) where += ` AND h.closed_christmas = 0`;
 
     /* ===== 영업시간 ===== */
-    if (targetDay !== null && targetTime) {
+    if (targetTime) {
+        const dayCondition =
+            targetDays.length > 0
+                ? `AND o.day_of_week IN (${targetDays.map(() => '?').join(',')})`
+                : '';
+
         where += `
-      AND EXISTS (
-        SELECT 1
-        FROM operationdata o
-        WHERE o.place_id = p.id
-          AND o.day_of_week = ?
-          AND (
-            (o.is_next_day = 0 AND ? BETWEEN o.open_time AND o.close_time)
-            OR
-            (o.is_next_day = 1 AND (? >= o.open_time OR ? <= o.close_time))
-          )
+    AND EXISTS (
+      SELECT 1
+      FROM operationdata o
+      WHERE o.place_id = p.id
+      ${dayCondition}
+      AND (
+        (o.is_next_day = 0 AND ? BETWEEN o.open_time AND o.close_time)
+        OR
+        (o.is_next_day = 1 AND (? >= o.open_time OR ? <= o.close_time))
       )
-    `;
-        params.push(targetDay, targetTime, targetTime, targetTime);
+    )
+  `;
+
+        if (targetDays.length > 0) {
+            params.push(...targetDays);
+        }
+        params.push(targetTime, targetTime, targetTime);
     }
+
 
     /* ===== 반려동물 크기 ===== */
     if (petSizes.length > 0) {
@@ -212,7 +232,7 @@ export async function GET(req: NextRequest) {
       p.rdnmadr_nm,
       p.lnm_addr
     FROM place p
-    JOIN holidaydata h ON p.id = h.place_id
+    JOIN holidaydata h ON p.id = h.id
     LEFT JOIN locationdata l ON p.id = l.id
     LEFT JOIN categorydata c ON p.id = c.id
     LEFT JOIN sizefilterdata s ON p.id = s.place_id
@@ -241,7 +261,7 @@ export async function GET(req: NextRequest) {
 
     params.push(size, offset);
 
-    const [rows] = await pool.query(sql, [...params, size, offset]);
+    const [rows] = await pool.query(sql, params);
     const [countRows]: any = await pool.query(countSql, params);
 
     return NextResponse.json({

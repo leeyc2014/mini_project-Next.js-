@@ -1,25 +1,32 @@
 'use client'
 
 import { useState } from "react";
-import { BoardPost } from "@/types/board";
+import { useRouter, useSearchParams } from "next/navigation";
 
-interface Props {
-    onResult: (posts: BoardPost[]) => void;
-}
 
-export default function BoardSearch({ onResult, }:  Props) {
+export default function BoardSearch() {
     const [searchType, setSearchType] = useState("title");
     const [keyword, setKeyword] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
     const handleSearch = async () => {
-        setLoading(true);
+        const params = new URLSearchParams(searchParams.toString());
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/board?searchType=${searchType}&keyword=${keyword}&page=1`);
-        const data = await res.json();
+        if(keyword.trim()) {
+            params.set("searchType", searchType);
+            params.set("keyword", keyword);
+            params.set("page", "1");
+        }
+        else {
+            params.delete("searchType");
+            params.delete("keyword");
+            params.set("page", "1");
+        }
 
-        onResult(Array.isArray(data) ? data : []);
-        setLoading(false);
+        router.push(`?${params.toString()}`);
     };
 
     return (
@@ -30,7 +37,7 @@ export default function BoardSearch({ onResult, }:  Props) {
                     <option value="author">작성자</option>
                     <option value="content">내용</option>
                 </select>
-                <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="검색어 입력" className="border rounded px-2 py-2 text-sm w-64" />
+                <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="검색어 입력" className="border rounded px-2 py-2 text-sm w-64" onKeyDown={(e) => e.key === "Enter" && handleSearch()}/>
             </div>
             <button onClick={handleSearch} disabled={loading} className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 cursor-pointer">
                 {loading ? "검색중..." : "검색"}

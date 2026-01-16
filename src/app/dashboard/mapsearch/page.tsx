@@ -61,7 +61,7 @@ export default function Page() {
                 return;
             }
 
-            url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/regionsearch?${params.toString()}`;
+            url = `/api/place/regionsearch?${params.toString()}`;
         }
 
         /** 카테고리 */
@@ -77,7 +77,7 @@ export default function Page() {
                 return;
             }
 
-            url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/categorysearch?${params.toString()}`;
+            url = `/api/place/categorysearch?${params.toString()}`;
         }
 
         /** 통합 */
@@ -100,7 +100,7 @@ export default function Page() {
                 return;
             }
 
-            url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/bothsearch?${params.toString()}`; // 👉 통합용 API
+            url = `/api/place/bothsearch?${params.toString()}`; // 👉 통합용 API
         }
 
         const res = await fetch(url);
@@ -132,7 +132,7 @@ export default function Page() {
 
         const fetchDetail = async () => {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_BASE_URL}/api/place/detail?id=${selectedPlaceId}`
+                `/api/place/detail?id=${selectedPlaceId}`
             );
             const data = await res.json();
             setPlaceDetail(data);
@@ -144,22 +144,24 @@ export default function Page() {
     return (
         <div className="flex flex-col w-full">
             <h1 className="text-3xl font-bold my-3 text-center px-4">지도 검색</h1>
-            <div className="flex flex-row">
-                <div className="flex flex-col border p-3 rounded container w-3/5 m-3">
-                    <div className="flex flex-row mb-2 justify-between">
-                        <label className="mr-4">
-                            <input type="radio" checked={searchMode === "region"} onChange={() => setSearchMode("region")} className="mr-2" />
-                            지역 기반
-                        </label>
-                        <label className="mr-4">
-                            <input type="radio" checked={searchMode === "category"} onChange={() => setSearchMode("category")} className="mr-2" />
-                            카테고리 기반
-                        </label>
-                        <label>
-                            <input type="radio" checked={searchMode === "both"} onChange={() => setSearchMode("both")} className="mr-2" />
-                            지역 + 카테고리
-                        </label>
-                        <button type="button" onClick={handleSearch} className="w-1/5 mx-5 border border-gray-300 rounded-lg px-5 py-2.5 text-sm font-medium bg-gray-100 hover:bg-gray-200 cursor-pointer">
+            <div className="flex flex-col md:flex-row">
+                <div className="flex flex-col border p-3 rounded container w-full md:w-3/5 m-3">
+                    <div className="flex flex-wrap gap-3 mb-2 items-center justify-between">
+                        <div className="flex flex-wrap gap-4">
+                            <label className="mr-4">
+                                <input type="radio" checked={searchMode === "region"} onChange={() => setSearchMode("region")} className="mr-2" />
+                                지역 기반
+                            </label>
+                            <label className="mr-4">
+                                <input type="radio" checked={searchMode === "category"} onChange={() => setSearchMode("category")} className="mr-2" />
+                                카테고리 기반
+                            </label>
+                            <label>
+                                <input type="radio" checked={searchMode === "both"} onChange={() => setSearchMode("both")} className="mr-2" />
+                                지역 + 카테고리
+                            </label>
+                        </div>
+                        <button type="button" onClick={handleSearch} className="w-full md:w-auto border border-gray-300 rounded-lg px-5 py-2.5 text-sm font-medium bg-gray-100 hover:bg-gray-200 cursor-pointer">
                             검색
                         </button>
                     </div>
@@ -173,7 +175,7 @@ export default function Page() {
                         <KakaoMap places={places} onSelectPlace={setSelectedPlaceId} />
                     </div>
                 </div>
-                <div className="flex flex-col mx-auto px-4 py-8 w-2/5">
+                <div className="flex flex-col mx-auto px-4 py-8 w-full md:w-2/5">
                     <SearchSummary searchMode={searchMode} region={{ ctp: ctpNm, sig: sigNm, dong: dongNm }} category={{ twoNm: twoNm, threeNms: threeNmList }} count={places.length} />
                     {!placeDetail && (
                         <p className="text-gray-400 text-center">마커 클릭 시 상세 정보 표시</p>

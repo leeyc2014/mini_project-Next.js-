@@ -23,7 +23,7 @@ export default function PlaceList({ data }: { data: any[] }) {
 
   return (
     <>
-      <ul className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-12">
+      <ul className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {data.map((place, idx) => (
           <li key={idx} onClick={() => openDetail(place.id)} className="cursor-pointer group bg-white border rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all">
             <div className="p-5">

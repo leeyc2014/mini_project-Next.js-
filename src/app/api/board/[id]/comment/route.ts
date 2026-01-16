@@ -23,7 +23,6 @@ export async function GET(
       updated_at
     FROM board_comment
     WHERE board_id = ?
-    AND is_deleted = 0
     ORDER BY created_at ASC
 
     `,
@@ -38,9 +37,6 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-
-  const authorId = session?.user.id;
-  const authorName = session?.user.name ?? "익명";
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
@@ -59,8 +55,8 @@ export async function POST(
       id,
       parent_id || null,
       content,
-      authorId,
-      authorName,
+      session.user.id,
+      session.user.name,
     ]
   );
 

@@ -33,7 +33,7 @@ export default function UserName() {
     <div className="flex items-center gap-4">
       {/* Username */}
       <div className="text-right">
-        <p className="font-bold text-lg text-blue-900">{session?.user?.id} <span className="text-black">님</span></p>
+        <p className="font-bold text-lg text-blue-900">{session?.user?.name} <span className="text-black">님</span></p>
       </div>
 
       {/* Divider */}
