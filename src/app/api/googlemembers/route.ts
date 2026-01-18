@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     if(!session || session.user.role !== 'admin') {
         return NextResponse.json({ message: 'Unauthorized'}, { status: 401});
     }
+    
     try {
         const { searchParams } = new URL(request.url);
         const useremail = searchParams.get('useremail');
@@ -33,6 +34,6 @@ export async function GET(request: Request) {
     }
     catch (error) {
         console.error("GET /api/googlemembers error: ", error);
-        return NextResponse.json({ error: "Server error" }, { status: 500 });
+        return NextResponse.json({ error: "서버 오류" }, { status: 500 });
     }
 }

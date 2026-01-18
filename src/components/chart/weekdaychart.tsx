@@ -6,10 +6,7 @@ import useSWR from 'swr'
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export default function WeekdayChart() {
-    const { data, error, isLoading } = useSWR(
-        '/api/timeseries/weekday',
-        fetcher
-    )
+    const { data, error, isLoading } = useSWR('/api/timeseries/weekday', fetcher)
     if (isLoading) return <div>로딩중...</div>;
     if (error) return <div>에러 발생</div>;
 
@@ -34,13 +31,3 @@ export default function WeekdayChart() {
         </div>
     )
 }
-
-{/* <LineChart data={data}>
-  <XAxis dataKey="weekday" />
-  <YAxis />
-  <Tooltip />
-  <Legend />
-  {categoryKeys.map(key => (
-    <Line key={key} dataKey={key} />
-  ))}
-</LineChart> */}

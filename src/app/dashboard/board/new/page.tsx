@@ -14,7 +14,7 @@ export default function BoardCreatePage() {
             body: JSON.stringify({ title, content }),
         });
 
-        router.push("/board");
+        router.push("/dashboard/board");
     };
 
     return (

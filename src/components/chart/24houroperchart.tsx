@@ -5,8 +5,6 @@ import useSWR from "swr";
 
 const COLORS = ["#2563eb", "#e5e7eb"];
 
-type Item = { type: string; cnt: number };
-
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function TwentyFourHourChart() {

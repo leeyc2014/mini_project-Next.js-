@@ -5,7 +5,8 @@ export const setSingleParam = (
 ) => {
     if (typeof value === 'string' && value !== '') {
         params.set(key, value);
-    } else {
+    }
+    else {
         params.delete(key);
     }
 };
@@ -30,7 +31,8 @@ export const setCheckParam = (
 ) => {
     if (value) {
         params.set(key, '1');
-    } else {
+    }
+    else {
         params.delete(key);
     }
 };

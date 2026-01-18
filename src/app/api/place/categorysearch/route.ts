@@ -7,11 +7,14 @@ export async function GET(req: Request) {
     const twoCd = searchParams.get("ctgry_two_cd");
     const threeCds = searchParams.getAll("ctgry_three_cd");
 
-    let sql = `
-    SELECT id, FCLTY_NM, LC_LA, LC_LO, CTGRY_TWO_CD, CTGRY_THREE_CD, LNM_ADDR, RDNMADR_NM
-    FROM categorydata
-    WHERE 1=1
-  `;
+    let sql = 
+        `
+        SELECT id, FCLTY_NM, LC_LA, LC_LO, CTGRY_TWO_CD, CTGRY_THREE_CD, LNM_ADDR, RDNMADR_NM
+        FROM categorydata
+        WHERE 1=1
+        `
+    ;
+        
     const params: any[] = [];
 
     if (twoCd) {

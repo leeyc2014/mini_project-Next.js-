@@ -48,13 +48,13 @@ export default function MembersData() {
 
             const res = await fetch(`/api/members${searchOption}`);
             if (!res.ok) {
-                throw new Error('Failed to fetch members');
+                throw new Error('fetch 실패');
             }
             const jsondata: Member[] = await res.json();
             setData(jsondata);
         }
         catch (error) {
-            console.error('Error fetching Data:', error);
+            console.error('fetch 오류: ', error);
         }
     }
 

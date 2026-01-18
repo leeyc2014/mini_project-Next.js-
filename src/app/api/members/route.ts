@@ -34,12 +34,11 @@ export async function GET(request: Request) {
         }
 
         const [rows] = await pool.query(sql, params);
-
         return NextResponse.json(rows);
     }
     catch (error) {
         console.error("GET /api/members error: ", error);
-        return NextResponse.json({ error: "Server error" }, { status: 500 });
+        return NextResponse.json({ error: "서버 오류" }, { status: 500 });
     }
 }
 
@@ -61,13 +60,11 @@ export async function POST(request: Request) {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // 회원 정보 저장
         await pool.query(
             `INSERT INTO members (userid, username) VALUES (?, ?)`,
             [userid, username]
         );
 
-        // 비밀번호까지 저장
         await pool.query(
             'INSERT INTO member_passwords (userid, password) VALUES (?, ?)',
             [userid, hashedPassword]

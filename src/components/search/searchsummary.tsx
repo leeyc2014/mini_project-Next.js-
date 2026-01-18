@@ -16,7 +16,6 @@ export default function SearchSummary({
     return (
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 shadow-sm">
             <p className="font-semibold text-blue-900 mb-2">검색 조건 요약</p>
-
             <div className="space-y-1 text-sm text-gray-800">
                 {(searchMode === "region" || searchMode === "both") && (
                     <p>

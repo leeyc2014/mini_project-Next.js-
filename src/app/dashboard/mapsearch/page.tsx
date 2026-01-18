@@ -49,9 +49,10 @@ export default function Page() {
     const handleSearch = async () => {
         let url = "";
 
-        /** 지역 */
+        /* 지역 */
         if (searchMode === "region" || searchMode === "both") {
             const params = new URLSearchParams();
+
             if (ctpCd) params.append("ctprvn_cd", ctpCd);
             if (sigCd) params.append("signgu_cd", sigCd);
             if (dongCd) params.append("legaldong_cd", dongCd);
@@ -64,9 +65,10 @@ export default function Page() {
             url = `/api/place/regionsearch?${params.toString()}`;
         }
 
-        /** 카테고리 */
+        /* 카테고리 */
         if (searchMode === "category" || searchMode === "both") {
             const params = new URLSearchParams();
+            
             if (twoCd) params.append("ctgry_two_cd", twoCd);
             threeCds.forEach(cd =>
                 params.append("ctgry_three_cd", cd)
@@ -80,16 +82,14 @@ export default function Page() {
             url = `/api/place/categorysearch?${params.toString()}`;
         }
 
-        /** 통합 */
+        /* 통합 */
         if (searchMode === "both") {
             const params = new URLSearchParams();
 
-            // 지역
             if (ctpCd) params.append("ctprvn_cd", ctpCd);
             if (sigCd) params.append("signgu_cd", sigCd);
             if (dongCd) params.append("legaldong_cd", dongCd);
 
-            // 카테고리
             if (twoCd) params.append("ctgry_two_cd", twoCd);
             threeCds.forEach(cd =>
                 params.append("ctgry_three_cd", cd)
@@ -100,7 +100,7 @@ export default function Page() {
                 return;
             }
 
-            url = `/api/place/bothsearch?${params.toString()}`; // 👉 통합용 API
+            url = `/api/place/bothsearch?${params.toString()}`;
         }
 
         const res = await fetch(url);

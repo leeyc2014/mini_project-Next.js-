@@ -2,46 +2,19 @@
 
 import { useEffect, useState } from "react";
 
-interface Ctp {
-    ctprvn_cd: number;
-    ctprvn_nm: string;
-}
-interface Sig {
-    signgu_cd: number;
-    ctprvn_cd: number;
-    signgu_nm: string;
-}
-interface Dong {
-    legaldong_cd: number;
-    signgu_cd: number;
-    legaldong_nm: string;
-}
-
-interface RegionSelectProps {
-    ctpCd: string;
-    setCtpCd: (v: string) => void;
-    setCtpNm: (v: string) => void;
-    sigCd: string;
-    setSigCd: (v: string) => void;
-    setSigNm: (v: string) => void;
-    dongCd: string;
-    setDongCd: (v: string) => void;
-    setDongNm: (v: string) => void;
-}
+import type { Ctp, Sig, Dong, RegionSelectProps } from "@/types/place"
 
 export default function RegionSelect({ ctpCd, setCtpCd, setCtpNm, sigCd, setSigCd, setSigNm, dongCd, setDongCd, setDongNm }: RegionSelectProps) {
     const [ctpList, setCtpList] = useState<Ctp[]>([]);
     const [sigList, setSigList] = useState<Sig[]>([]);
     const [dongList, setDongList] = useState<Dong[]>([]);
 
-    /** 시·도 */
     useEffect(() => {
         fetch("/api/ctprvn")
             .then(res => res.json())
             .then(setCtpList);
     }, []);
 
-    /** 시·군·구 */
     useEffect(() => {
         if (!ctpCd) return;
         setSigCd("");
@@ -52,7 +25,6 @@ export default function RegionSelect({ ctpCd, setCtpCd, setCtpNm, sigCd, setSigC
             .then(setSigList);
     }, [ctpCd]);
 
-    /** 동 */
     useEffect(() => {
         if (!sigCd) return;
         setDongCd("");

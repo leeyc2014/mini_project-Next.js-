@@ -1,87 +1,63 @@
-'use client'
+'use client';
 
-import { useState, useRef, FormEvent } from "react";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function MyPage() {
-    const idRef = useRef<HTMLInputElement>(null);
-    const usernameRef = useRef<HTMLInputElement>(null);
-    const passwordRef = useRef<HTMLInputElement>(null);
-    const checkPasswordRef = useRef<HTMLInputElement>(null);
-
-    const [loading, setLoading] = useState(false);
+    const { data: session, status, update } = useSession();
     const router = useRouter();
 
-    const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const [username, setUsername] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (session?.user?.name) {
+            setUsername(session.user.name);
+        }
+    }, [session?.user?.name]);
+
+    if (status === "loading") return null;
+    if (!session) return <p>로그인이 필요합니다.</p>;
+
+    const handleUpdate = async () => {
         setLoading(true);
 
-        const id = idRef.current?.value;
-        const username = usernameRef.current?.value;
-        const password = passwordRef.current?.value;
-        const checkPassword = checkPasswordRef.current?.value;
+        const res = await fetch("/api/mypage", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username }),
+        });
 
-        if (!id || !username || !password || !checkPassword) {
-            toast.error('모든 항목을 입력해주세요.');
-            setLoading(false);
-            return;
-        }
+        setLoading(false);
 
-        if (password !== checkPassword) {
-            toast.error("비밀번호가 일치하지 않습니다.");
-            setLoading(false);
-            return;
-        }
+        if (res.ok) {
+            await update({ name: username });
 
-        try {
-            const res = await fetch("/api/members", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userid: id, username, password }),
-            });
-            if (!res.ok) {
-                toast.error("정보수정 실패");
-                setLoading(false);
-                return;
-            }
-            toast.error("정보수정 성공");
-            router.push("/");
-        }
-        catch (err) {
-            toast.error('정보수정 중 오류가 발생했습니다.');
-        }
-        finally {
-            setLoading(false);
+            toast.success("사용자 이름이 수정되었습니다.");
+            router.push("/dashboard");
+        } 
+        else {
+            toast.error("수정 실패");
         }
     };
-    
+
     return (
-        <section className="bg-gray-50 min-h-screen flex items-center justify-center">
-            <div className="w-full max-w-md bg-white rounded-lg shadow p-6">
-                <h1 className="text-2xl font-bold mb-6 text-center">내 정보</h1>
-                <form className="space-y-4" onSubmit={handleSignUp}>
-                    <div>
-                        <label htmlFor="id" className="block mb-2 text-sm font-medium">아이디</label>
-                        <input type="id" id="id" ref={idRef} className="w-full p-2 border rounded" placeholder="아이디 입력" />
-                    </div>
-                    <div>
-                        <label htmlFor="username" className="block mb-2 text-sm font-medium">사용자 이름</label>
-                        <input type="text" id="username" ref={usernameRef} className="w-full p-2 border rounded" placeholder="사용자 이름 입력" />
-                    </div>
-                    <div>
-                        <label htmlFor="password" className="block mb-2 text-sm font-medium">비밀번호</label>
-                        <input type="password" id="password" ref={passwordRef} className="w-full p-2 border rounded" placeholder="비밀번호 입력" />
-                    </div>
-                    <div>
-                        <label htmlFor="checkPassword" className="block mb-2 text-sm font-medium">비밀번호 확인</label>
-                        <input type="password" id="checkPassword" ref={checkPasswordRef} className="w-full p-2 border rounded" placeholder="비밀번호 확인" />
-                    </div>
-                    <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 cursor-pointer">
-                        {loading ? "수정 중..." : "회원정보수정"}
-                    </button>
-                </form>
+        <div className="max-w-md mx-auto bg-white p-6 rounded-xl shadow">
+            <h2 className="text-lg font-bold mb-6">마이페이지</h2>
+            <div className="mb-4">
+                <label className="text-sm text-gray-500">아이디</label>
+                <input type="text" value={session.user.id} readOnly className="w-full mt-1 bg-gray-100 border rounded px-3 py-2 text-sm" />
             </div>
-        </section>
-    )
+            <div className="mb-6">
+                <label className="text-sm text-gray-500">사용자 이름</label>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full mt-1 border rounded px-3 py-2 text-sm" />
+            </div>
+            
+            <button onClick={handleUpdate} disabled={loading} className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition mb-3">
+                이름 수정
+            </button>
+        </div>
+    );
 }

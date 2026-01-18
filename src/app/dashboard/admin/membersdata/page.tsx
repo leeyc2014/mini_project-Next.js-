@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import MembersData from "@/components/member/members";
 import GoogleMembersData from "@/components/member/googlemembers";
 
-export default function Page() {
+export default function Page() { 
     const { data: session, status } = useSession();
     const router = useRouter();
 

@@ -16,12 +16,15 @@ export default function ResetPassword() {
     const handleReset = async () => {
         const newPassword = passwordRef.current?.value;
         const checkPassword = checkPasswordRef.current?.value;
+
         if(!id || !newPassword) {
             return toast.error("비밀번호를 입력하세요.");
         }
+
         if(newPassword !== checkPassword) {
             return toast.error("비밀번호가 일치하지 않습니다.");
         }
+        
         setLoading(true);
 
         try {

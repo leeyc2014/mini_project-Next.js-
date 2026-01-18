@@ -6,19 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import RegionSelect from '@/components/search/regionselectbox';
 import CategorySelect from '@/components/category/checkbox';
 import ClearFilterButton from '@/components/clearbutton';
-import {
-    setSingleParam,
-    setMultiParam,
-    setCheckParam,
-} from '@/utils/searchParams'
-
-import {
-    DAY_OF_WEEK_MAP,
-    OPEN_FILTER_MAP,
-    PET_SIZE_MAP,
-    PET_ONLY_MAP,
-    PET_CHARGE_MAP,
-} from '@/constants/filters';
+import { setSingleParam, setMultiParam, setCheckParam } from '@/utils/searchParams'
+import { DAY_OF_WEEK_MAP, OPEN_FILTER_MAP, PET_SIZE_MAP, PET_ONLY_MAP, PARKING_POSS_MAP, PET_CHARGE_MAP } from '@/constants/filters';
 
 export default function SearchFilter() {
     const [ctpCd, setCtpCd] = useState("");
@@ -57,26 +46,26 @@ export default function SearchFilter() {
         const formData = new FormData(e.currentTarget);
         const params = new URLSearchParams();
 
-        /* ===== 기본 ===== */
+        /* 기본 */
         setSingleParam(params, 'searchType', formData.get('searchType'));
         setSingleParam(params, 'keyword', formData.get('keyword'));
         params.set('search', 'true');
         params.set('page', '1');
 
-        /* ===== 지역 ===== */
+        /* 지역 */
         if (ctpCd) params.set('ctpCd', ctpCd);
         if (sigCd) params.set('sigCd', sigCd);
         if (dongCd) params.set('dongCd', dongCd);
 
-        /* ===== 카테고리 ===== */
+        /* 카테고리 */
         if (twoCd) params.set('twoCd', twoCd);
         setMultiParam(params, 'threeCd', threeCds);
 
-        /* ===== 반려동물 ===== */
+        /* 반려동물 */
         setMultiParam(params, 'petSize', formData.getAll('petSize'));
         setSingleParam(params, 'petOnly', formData.get('petOnly'));
 
-        /* ===== 영업 ===== */
+        /* 영업 */
         setCheckParam(params, 'openNow', formData.get('openNow'));
         setCheckParam(params, 'holidayOpen', formData.get('holidayOpen'));
         setCheckParam(params, 'seolOpen', formData.get('seolOpen'));
@@ -210,10 +199,10 @@ export default function SearchFilter() {
                             <ClearFilterButton onClear={() => setParking(null)} />
                         </div>
                         <div className="flex gap-2">
-                            {['Y', 'N'].map((v) => (
-                                <label key={v} className={`flex-1 text-center py-2.5 border rounded-xl text-sm transition-all cursor-pointer ${parking === v ? 'border-blue-600 bg-blue-600 text-white font-bold' : 'border-gray-100 text-gray-500'}`}>
-                                    <input type="radio" name="parking" value={v} checked={parking === v} onChange={() => setParking(v)} className="hidden" />
-                                    {v === 'Y' ? '주차 가능' : '주차 불가'}
+                            {Object.entries(PARKING_POSS_MAP).map(([label, value]) => (
+                                <label key={value} className={`flex-1 text-center py-2.5 border rounded-xl text-sm transition-all cursor-pointer ${parking === String(value) ? 'border-blue-600 bg-blue-600 text-white font-bold' : 'border-gray-100 text-gray-500'}`}>
+                                    <input type="radio" name="parking" value={value} checked={parking === String(value)} onChange={() => setParking(String(value))} className="hidden" />
+                                    {label}
                                 </label>
                             ))}
                         </div>

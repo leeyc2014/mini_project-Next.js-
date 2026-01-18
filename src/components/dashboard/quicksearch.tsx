@@ -22,7 +22,7 @@ export default function QuickSearch({ onResult, }: { onResult: (results: Place[]
         const data = await res.json();
 
         if (!Array.isArray(data)) {
-            console.error("QuickSearch response is not array:", data);
+            console.error("데이터가 배열 형식이 아님", data);
             setLoading(false);
             return;
         }

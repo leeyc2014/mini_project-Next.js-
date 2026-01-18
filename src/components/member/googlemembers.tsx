@@ -47,13 +47,13 @@ export default function GoogleMembersData() {
 
             const gRes = await fetch(`/api/googlemembers${searchGOption}`);
             if (!gRes.ok) {
-                throw new Error('Failed to fetch Google members');
+                throw new Error('fetch 실패');
             }
             const gJsondata: GoogleMember[] = await gRes.json();
             setGdata(gJsondata);
         }
         catch (error) {
-            console.error('Error fetching Data', error);
+            console.error('fetch 오류: ', error);
         }
     }
 

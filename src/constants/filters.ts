@@ -29,11 +29,6 @@ export const PET_ONLY_MAP: Record<string, number> = {
     '반려동물전용': 1,
 };
 
-export const PLACE_TYPE_MAP: Record<string, string> = {
-    '실내 동반 가능': 'IN',
-    '실외 동반 가능': 'OUT',
-};
-
 export const PARKING_POSS_MAP: Record<string, string> = {
     '주차 가능': 'Y',
     '주차 불가능': 'N',

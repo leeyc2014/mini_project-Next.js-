@@ -14,7 +14,7 @@ const COLORS = [
     "#ec4899" 
 ];
 
-export default function CategoryHourChart() {
+export default function CategoryHourChart() { 
     const { data, error, isLoading } = useSWR("/api/timeseries/category_hour", fetcher);
 
     if (isLoading) return <div>로딩중...</div>;

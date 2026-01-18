@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast";
 
-export default function FindPassword() {
+export default function FindPassword() { 
     const idRef = useRef<HTMLInputElement>(null);
     const [loading, setLoading] = useState(false);
     const router = useRouter();

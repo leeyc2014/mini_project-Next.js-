@@ -27,7 +27,6 @@ export default function ChartPage() {
             <div className="mb-8 flex items-center justify-between">
                 <h1 className="text-3xl font-bold text-gray-800">반려동물 서비스 시계열</h1>
             </div>
-
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-3">
                 <div className="rounded-2xl bg-white p-5 shadow-sm border">
                     <p className="text-sm text-gray-500">전체 시설 수</p>
@@ -42,7 +41,6 @@ export default function ChartPage() {
                     <p className="mt-2 text-3xl font-bold text-indigo-600">{kpi?.open_24 ?? "-"}</p>
                 </div>
             </div>
-
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mt-10">
                 <div className="rounded-2xl border bg-white p-5 shadow-sm transition hover:shadow-md">
                     <h2 className="mb-3 text-lg font-semibold text-gray-700">⏰ 시간대별 영업 시설</h2>

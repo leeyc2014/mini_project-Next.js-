@@ -45,6 +45,7 @@ export default function SignUp() {
                 setLoading(false);
                 return;
             }
+            
             toast.success("회원가입 성공");
             router.push("/");
         }

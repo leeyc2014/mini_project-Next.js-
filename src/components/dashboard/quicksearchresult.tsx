@@ -1,4 +1,3 @@
-
 interface Place {
     id: number;
     fclty_nm: string;

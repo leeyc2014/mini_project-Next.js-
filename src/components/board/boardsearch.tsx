@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 
-export default function BoardSearch() {
+export default function BoardSearch() { 
     const [searchType, setSearchType] = useState("title");
     const [keyword, setKeyword] = useState("");
     const [loading, setLoading] = useState(false);

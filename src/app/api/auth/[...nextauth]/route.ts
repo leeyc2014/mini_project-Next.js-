@@ -9,6 +9,13 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            authorization: {
+                params: {
+                    prompt: "select_account",
+                    access_type: "offline",
+                    response_type: "code"
+                }
+            }
         }),
 
         CredentialsProvider({
@@ -24,7 +31,10 @@ export const authOptions: NextAuthOptions = {
                 const { userid, password } = credentials;
 
                 const [rows]: any = await pool.query(
-                    'SELECT members.userid, members.role,members.username, member_passwords.password FROM members JOIN member_passwords ON members.userid = member_passwords.userid WHERE members.userid = ?',
+                    `SELECT members.userid, members.role, members.username, member_passwords.password
+                     FROM members
+                     JOIN member_passwords ON members.userid = member_passwords.userid
+                     WHERE members.userid = ?`,
                     [userid]
                 );
 
@@ -51,49 +61,40 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user, account }) {
             if (account?.provider === "google") {
-                if (!user.email) return false;
-
-                const useremail = user.email;
+                if (!user.email) {
+                    return false;
+                }
+                const useremail = user.email!;
 
                 const [rows]: any = await pool.query(
-                    "SELECT username FROM googlemembers WHERE useremail = ?",
+                    "SELECT useremail FROM googlemembers WHERE useremail = ?",
                     [useremail]
                 );
 
-                // 최초 로그인 → row 생성
                 if (rows.length === 0) {
                     await pool.query(
-                        "INSERT INTO googlemembers (useremail) VALUES (?)",
+                        `INSERT INTO googlemembers (useremail) VALUES (?)`,
                         [useremail]
                     );
-
-                    // username 없음 → 생성 페이지
-                    return "/makeusername";
-                }
-
-                // row는 있지만 username 없음
-                if (!rows[0].username) {
-                    return "/makeusername";
                 }
             }
-
-            // username 있음 → 메인 페이지
             return true;
         },
 
-        async jwt({ token, user, account }) {
+        async jwt({ token, user, account, trigger, session }) {
             if (account?.provider === "credentials" && user) {
                 token.id = user.id;               // credentials
                 token.role = user.role;
-                token.username = user.name;
+                token.name = user.name;
+                token.provider = "credentials";
             }
             if (account?.provider === "google") {
-                const [rows]: any = await pool.query(
-                    "SELECT username FROM googlemembers WHERE useremail = ?",
-                    [token.email]
-                );
-
-                token.username = rows?.[0]?.username ?? null;
+                token.id = user.email;            // google      
+                token.role = "member";
+                token.provider = "google";
+            }
+            if (trigger === "update" && session?.name) {
+                token.name = session.name;
             }
             return token;
         },
@@ -102,7 +103,8 @@ export const authOptions: NextAuthOptions = {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role;
-                session.user.name = token.username as string;
+                session.user.name = token.name;
+                session.user.provider = token.provider as "credentials" | "google";
             }
             return session;
         }

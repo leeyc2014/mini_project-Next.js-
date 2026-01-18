@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
-export async function GET() {
-    const sql = `
+export async function GET() { 
+    const sql = 
+        `
         WITH today_info AS (
             SELECT
                 WEEKDAY(CURDATE()) AS weekday,
@@ -56,7 +57,7 @@ export async function GET() {
 
         GROUP BY hd.hour
         ORDER BY hd.hour;
-    `;
+        `;
 
     const [rows] = await pool.query(sql);
     return NextResponse.json(rows);

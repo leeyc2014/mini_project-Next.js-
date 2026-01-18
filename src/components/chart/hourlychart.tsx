@@ -5,7 +5,7 @@ import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-export default function HourlyChart() {
+export default function HourlyChart() { 
     const { data, error, isLoading } = useSWR("/api/timeseries/hourly", fetcher);
 
     if (isLoading) return <div>로딩중...</div>;

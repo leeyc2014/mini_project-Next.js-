@@ -15,10 +15,10 @@ export async function PUT(
 
     const [result]: any = await pool.query(
         `
-    UPDATE board_comment
-    SET content = ?
-    WHERE id = ? AND author_id = ?
-    `,
+        UPDATE board_comment
+        SET content = ?
+        WHERE id = ? AND author_id = ?
+        `,
         [content, id, session.user.id]
     );
 
@@ -42,7 +42,7 @@ export async function DELETE(
     );
 
     if (!comment) {
-        return NextResponse.json({ message: "Not found" }, { status: 404 });
+        return NextResponse.json({ message: "존재하지 않음" }, { status: 404 });
     }
 
     const isAdmin = session.user.role === "admin";
@@ -50,17 +50,17 @@ export async function DELETE(
 
     // 수정은 허용 안 함, 삭제만
     if (!isAdmin && !isOwner) {
-        return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+        return NextResponse.json({ message: "허용되지 않음" }, { status: 403 });
     }
 
     // soft delete
     await pool.query(
         `
-    UPDATE board_comment
-    SET is_deleted = 1,
-        deleted_at = NOW()
-    WHERE id = ?
-    `,
+        UPDATE board_comment
+        SET is_deleted = 1,
+            deleted_at = NOW()
+        WHERE id = ?
+        `,
         [id]
     );
 
