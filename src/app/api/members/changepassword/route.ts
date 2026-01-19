@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
     try {
         const { id, newPassword } = await request.json();
 

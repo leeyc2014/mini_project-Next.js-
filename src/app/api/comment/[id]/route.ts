@@ -3,7 +3,7 @@ import pool from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function PUT(
+export async function PATCH(
     req: NextRequest,
     context: { params: Promise<{ id: string }> }
 ) {

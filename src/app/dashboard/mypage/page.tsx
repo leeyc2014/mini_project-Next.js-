@@ -25,7 +25,7 @@ export default function MyPage() {
         setLoading(true);
 
         const res = await fetch("/api/mypage", {
-            method: "PUT",
+            method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username }),
         });

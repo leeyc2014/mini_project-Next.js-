@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import pool from "@/lib/db";
 
-export async function PUT(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {

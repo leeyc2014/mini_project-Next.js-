@@ -29,7 +29,7 @@ export default function ResetPassword() {
 
         try {
             const res = await fetch("/api/members/changepassword", {
-                method: "PUT",
+                method: "PATCH",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({id, newPassword}),
             });

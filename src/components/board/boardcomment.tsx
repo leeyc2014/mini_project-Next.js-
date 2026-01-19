@@ -67,7 +67,7 @@ export default function BoardComment({ boardId }: { boardId: number }) {
         await fetch(
             `/api/comment/${id}`,
             {
-                method: "PUT",
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content: editText }),
             }

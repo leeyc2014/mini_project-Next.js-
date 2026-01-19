@@ -26,7 +26,7 @@ export default function BoardEditPage() {
 
     const handleUpdate = async () => {
         await fetch(`/api/board/${id}`, {
-            method: "PUT",
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
