@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 
-interface Place {
-    id: number;
-    fclty_nm: string;
-    rdnmadr_nm: string;
-    lnm_addr: string;
-}
+import type { Place } from "@/types/place";
 
 export default function QuickSearch({ onResult, }: { onResult: (results: Place[], keyword: string) => void; }) {
     const [keyword, setKeyword] = useState("");

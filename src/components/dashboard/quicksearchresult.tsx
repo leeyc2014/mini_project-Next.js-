@@ -1,9 +1,4 @@
-interface Place {
-    id: number;
-    fclty_nm: string;
-    rdnmadr_nm: string;
-    lnm_addr: string;
-}
+import type { Place } from "@/types/place";
 
 export default function QuickSearchResult({
     keyword,
