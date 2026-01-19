@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Providers from "../providers";
-import { Toaster } from "react-hot-toast";
 import NavLink from "@/components/navlink";
 import Username from "@/components/username";
 
