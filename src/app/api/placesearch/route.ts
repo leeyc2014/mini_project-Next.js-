@@ -241,6 +241,7 @@ export async function GET(req: NextRequest) {
         LEFT JOIN petfilterdata pf ON p.id = pf.id
         LEFT JOIN extrafilterdata e ON p.id = e.id
         LEFT JOIN chargefilterdata cf ON p.id = cf.place_id
+        LEFT JOIN operationdata o ON p.id = o.place_id
         ${where}
         LIMIT ? OFFSET ?
         `
@@ -259,6 +260,7 @@ export async function GET(req: NextRequest) {
         LEFT JOIN petfilterdata pf ON p.id = pf.id
         LEFT JOIN extrafilterdata e ON p.id = e.id
         LEFT JOIN chargefilterdata cf ON p.id = cf.place_id
+        LEFT JOIN operationdata o ON p.id = o.place_id
         ${where}
         `
     ;
