@@ -3,33 +3,38 @@
 import { useState, useEffect } from "react";
 import { BoardPost } from "@/types/board";
 import Pagination from "@/components/paging";
-import { useRouter, useSearchParams } from "next/navigation";
 
 interface Props {
     pageSize: number;
     selectedId: number | null;
     onSelect: (id: number) => void;
     onCreate: () => void;
+    searchTerm: string;
+    searchType: string;
 }
 
-export default function BoardList({ pageSize, selectedId, onSelect, onCreate }: Props) {
+export default function BoardList({ pageSize, selectedId, onSelect, onCreate, searchTerm, searchType }: Props) {
     const [posts, setPosts] = useState<BoardPost[]>([]);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
 
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const pageParam = searchParams.get("page");
-    const currentPage = pageParam ? Number(pageParam) : 1;
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, searchType]);
 
     useEffect(() => {
         const fetchPosts = async () => {
             setLoading(true);
 
             try {
-                const params = new URLSearchParams(searchParams.toString());
+                const params = new URLSearchParams();
                 params.set("page", String(currentPage));
                 params.set("limit", String(pageSize));
+                if (searchTerm.trim()) {
+                    params.set("keyword", searchTerm);
+                    params.set("searchType", searchType);
+                }
 
                 const res = await fetch(`/api/board?${params.toString()}`);
                 const data = await res.json();
@@ -48,18 +53,12 @@ export default function BoardList({ pageSize, selectedId, onSelect, onCreate }: 
         };
 
         fetchPosts();
-    }, [currentPage, searchParams, pageSize]);
-    
-    const goPage = (page: number) => {
-        if (page < 1 || page > Math.ceil(totalCount / pageSize)) return;
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", String(page));
-        router.push(`?${params.toString()}`);
-    };
+    }, [currentPage, pageSize, searchTerm, searchType]);
 
     return (
         <div className="rounded-xl bg-white border shadow-sm overflow-hidden">
             {loading && <div className="p-4 text-gray-500 text-center">로딩 중...</div>}
+            {!loading && posts.length === 0 && <div className="p-4 text-gray-500 text-center">게시글이 없습니다.</div>}
             <ul className="divide-y">
                 {posts.map((post) => (
                     <li key={post.id} onClick={() => onSelect(post.id)} className={`px-4 py-3 cursor-pointer hover:bg-gray-50 ${selectedId === post.id ? "bg-blue-50" : ""}`}>
@@ -77,7 +76,7 @@ export default function BoardList({ pageSize, selectedId, onSelect, onCreate }: 
                 </button>
             </div>
             <div className="p-3 text-center text-sm text-gray-400">
-                <Pagination currentPage={currentPage} hasNext={currentPage * pageSize < totalCount} totalCount={totalCount} pageSize={pageSize} />
+                <Pagination currentPage={currentPage} hasNext={currentPage * pageSize < totalCount} totalCount={totalCount} pageSize={pageSize} onPageChange={setCurrentPage} />
             </div>
         </div>
     );
