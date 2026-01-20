@@ -1,8 +1,6 @@
-import Pagination from '@/components/paging';
 import SearchFilter from '@/components/search/searchfilter';
-import PlaceList from '@/components/placelist/placelist';
-
 import { PlaceResponse } from '@/types/place';
+import PlaceListContainer from '@/components/placelist/placelistcontainer';
 
 interface PageProps {
     searchParams: Promise<{ [key: string]: string | undefined }>;
@@ -45,10 +43,7 @@ export default async function PlacesPage({ searchParams }: PageProps) {
                             </div>
                         </header>
 
-                        <PlaceList data={data.data} />
-                        <div className="py-8 border-t border-gray-100">
-                            <Pagination currentPage={page} hasNext={page * size < data.totalCount} totalCount={data.totalCount} pageSize={size} />
-                        </div>
+                        <PlaceListContainer initialData={data.data} totalCount={data.totalCount} pageSize={size} currentPage={page} />
                     </div>
                 </main>
             </div>

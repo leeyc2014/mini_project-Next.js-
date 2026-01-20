@@ -28,16 +28,7 @@ export default function Pagination({ currentPage, hasNext, totalCount, pageSize,
                 <button disabled={!hasNext} onClick={() => goPage(currentPage + 1)} className="px-3 py-1 border rounded disabled:opacity-40">다음</button>
             </div>
             <div className="flex gap-2 items-center text-sm">
-                <input 
-                    type="number" 
-                    min={1} 
-                    max={totalPages} 
-                    value={inputPage} 
-                    onChange={(e) => setInputPage(e.target.value)} 
-                    className="w-20 border px-2 py-1 rounded" 
-                    placeholder="페이지" 
-                    onKeyDown={(e) => { if (e.key === 'Enter') { const page = Number(inputPage); if (!isNaN(page)) goPage(page); }}}
-                />
+                <input type="number" min={1} max={totalPages} value={inputPage} onChange={(e) => setInputPage(e.target.value)} className="w-20 border px-2 py-1 rounded" placeholder="페이지" onKeyDown={(e) => { if (e.key === 'Enter') { const page = Number(inputPage); if (!isNaN(page)) goPage(page); }}} />
                 <button onClick={() => { const page = Number(inputPage); if (!isNaN(page)) goPage(page); }} className="px-3 py-1 border rounded cursor-pointer">이동</button>
             </div>
         </div>
