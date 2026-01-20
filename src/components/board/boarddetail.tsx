@@ -48,9 +48,7 @@ export default function BoardDetail({ postId }: Props) {
         await fetch(`/api/board/${detail?.id}`, {
             method: "DELETE",
         });
-
-        router.push("/dashboard/board");
-        setDetail(null);
+        window.location.href = "/dashboard/board";
     }
 
     if (!detail) {
