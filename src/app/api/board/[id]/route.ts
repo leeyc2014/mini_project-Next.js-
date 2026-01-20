@@ -59,7 +59,7 @@ export async function PATCH(
 
 export async function DELETE(
     req: NextRequest,
-    context: { params: Promise<{ id: string }> }
+    context: { params: Promise<{ id:string }> }
 ) {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -68,10 +68,17 @@ export async function DELETE(
 
     const { id } = await context.params;
 
-    await pool.query(
-        `DELETE FROM board WHERE id = ? AND author_id = ?`,
-        [id, session.user.id]
-    );
+    if (session.user.role === 'admin') {
+        await pool.query(
+            `DELETE FROM board WHERE id = ?`,
+            [id]
+        );
+    } else {
+        await pool.query(
+            `DELETE FROM board WHERE id = ? AND author_id = ?`,
+            [id, session.user.id]
+        );
+    }
 
     return NextResponse.json({ success: true });
 }

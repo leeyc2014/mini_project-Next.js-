@@ -17,7 +17,7 @@ export default function BoardDetail({ postId }: Props) {
     const [detail, setDetail] = useState<BoardPost | null>(null);
     const router = useRouter();
 
-    const isOwner = session?.user?.id === detail?.author_id;
+    const isOwner = String(session?.user?.id) === String(detail?.author_id);
     const admin = session?.user?.role === "admin";
 
 
@@ -69,16 +69,24 @@ export default function BoardDetail({ postId }: Props) {
             </p>
 
             <div className="whitespace-pre-line text-sm">{detail.content}</div>
-            {isOwner || admin && (
+
+            {(isOwner || admin) && (
                 <div className="flex gap-2 justify-end">
                     {isOwner && (
-                        <button onClick={() => router.push(`/dashboard/board/edit/${detail.id}`)} className="px-3 py-1 text-sm rounded cursor-pointer">
-                            수정
+                        <>
+                            <button onClick={() => router.push(`/dashboard/board/edit/${detail.id}`)} className="px-3 py-1 text-sm rounded cursor-pointer">
+                                수정
+                            </button>
+                            <button onClick={handleDeletePost} className="px-3 py-1 text-sm hover:text-red-600 cursor-pointer">
+                                삭제
+                            </button>
+                        </>
+                    )}
+                    {admin && !isOwner && (
+                        <button onClick={handleDeletePost} className="px-3 py-1 text-sm hover:text-red-600 cursor-pointer">
+                            삭제
                         </button>
                     )}
-                    <button onClick={handleDeletePost} className="px-3 py-1 text-sm hover:text-red-600 cursor-pointer">
-                        삭제
-                    </button>
                 </div>
             )}
 
